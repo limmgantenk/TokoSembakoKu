@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toko Sembako Berkah - Belanja Sembako Modern & Praktis</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans flex flex-col min-h-screen">
+
+    <!-- HEADER / NAVBAR -->
+    <header class="sticky top-0 z-40 bg-white shadow-sm border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showPage('home')">
+                <div class="bg-brand-600 text-white p-2.5 rounded-xl shadow-md">
+                    <i class="fa-solid fa-store text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-xl text-gray-900 tracking-tight leading-none">Sembako<span class="text-brand-600">Ku</span></h1>
+                    <p class="text-xs text-gray-500 font-medium mt-0.5">Toko Sembako Lengkap & Murah</p>
+                </div>
+            </div>
+
+            <!-- Navigation Links & Cart Button -->
+            <div class="flex items-center space-x-4">
+                <button onclick="showPage('home')" class="text-sm font-semibold text-gray-600 hover:text-brand-600 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-house text-xs"></i> Beranda
+                </button>
+                <button onclick="toggleCartModal()" class="relative bg-brand-50 hover:bg-brand-100 text-brand-700 font-semibold px-4 py-2 rounded-xl text-sm transition flex items-center gap-2 border border-brand-100">
+                    <i class="fa-solid fa-shopping-cart"></i>
+                    <span class="hidden sm:inline">Keranjang</span>
+                    <span id="cart-badge" class="bg-brand-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow">
+        
+        <!-- ================= HALAMAN 1: BERANDA & KATALOG ================= -->
+        <div id="page-home" class="transition-all duration-300">
+            <!-- Hero Banner -->
+            <section class="bg-gradient-to-r from-brand-700 via-brand-600 to-emerald-500 text-white py-10 px-4 mb-8 shadow-inner">
+                <div class="max-w-7xl mx-auto text-center">
+                    <span class="bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Promo Spesial Hari Ini</span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-2">Belanja Sembako Kebutuhan Rumah Jadi Lebih Mudah</h2>
+                    <p class="text-brand-100 text-sm md:text-base max-w-2xl mx-auto">Pesan online, siap diantar langsung ke rumah Anda atau ambil sendiri di toko tanpa antre.</p>
+                </div>
+            </section>
+
+            <!-- Search & Filter Bar -->
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+                <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                    <!-- Search Input -->
+                    <div class="relative w-full md:w-80">
+                        <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="Cari nama produk..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent shadow-sm">
+                        <i class="fa-solid fa-search absolute left-3.5 top-3.5 text-gray-400 text-sm"></i>
+                    </div>
+
+                    <!-- Category Tabs -->
+                    <div class="flex overflow-x-auto w-full md:w-auto gap-2 pb-2 md:pb-0 custom-scrollbar">
+                        <button onclick="setCategory('all')" class="cat-btn active bg-brand-600 text-white px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition shadow-sm">Semua Produk</button>
+                        <button onclick="setCategory('jajanan')" class="cat-btn bg-white hover:bg-brand-50 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap border border-gray-200 transition">Jajanan</button>
+                        <button onclick="setCategory('minuman')" class="cat-btn bg-white hover:bg-brand-50 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap border border-gray-200 transition">Minuman</button>
+                        <button onclick="setCategory('kebutuhan')" class="cat-btn bg-white hover:bg-brand-50 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap border border-gray-200 transition">Kebutuhan Rumah</button>
+                        <button onclick="setCategory('rokok')" class="cat-btn bg-white hover:bg-brand-50 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap border border-gray-200 transition">Rokok</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Product Grid -->
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+                <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                    <!-- Dynamic Product Cards Injected Here -->
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= HALAMAN 2: DETAIL PEMESANAN / CHECKOUT ================= -->
+        <div id="page-checkout" class="hidden transition-all duration-300">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <!-- Back Button & Title -->
+                <div class="flex items-center gap-3 mb-6">
+                    <button onclick="showPage('home')" class="p-2 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-brand-50 hover:text-brand-600 transition shadow-sm">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Detail Pemesanan</h2>
+                        <p class="text-xs text-gray-500">Lengkapi data pembeli untuk menyelesaikan pesanan</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Order Summary -->
+                    <div class="md:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
+                        <h3 class="font-bold text-lg text-gray-900 mb-4 pb-2 border-b border-gray-100 flex items-center justify-between">
+                            Ringkasan Pesanan
+                            <span id="checkout-item-count" class="text-xs bg-brand-100 text-brand-700 font-semibold px-2 py-0.5 rounded-full">0 Barang</span>
+                        </h3>
+                        <div id="checkout-items" class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-1 mb-4">
+                            <!-- Selected items summary injected here -->
+                        </div>
+                        <div class="border-t border-gray-100 pt-3 space-y-2 text-sm">
+                            <div class="flex justify-between text-gray-600">
+                                <span>Subtotal</span>
+                                <span id="checkout-subtotal" class="font-semibold">Rp 0</span>
+                            </div>
+                            <div class="flex justify-between text-gray-600">
+                                <span>Biaya Pengiriman</span>
+                                <span id="checkout-shipping" class="font-semibold text-brand-600">Gratis (Ambil di Toko)</span>
+                            </div>
+                            <div class="flex justify-between text-base font-bold text-gray-900 pt-2 border-t border-dashed">
+                                <span>Total Bayar</span>
+                                <span id="checkout-total" class="text-brand-600">Rp 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Checkout Form -->
+                    <div class="md:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <form id="order-form" onsubmit="submitOrder(event)" class="space-y-6">
+                            
+                            <!-- Contact Info -->
+                            <div>
+                                <h3 class="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-user-circle text-brand-600"></i> Informasi Pembeli
+                                </h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Lengkap *</label>
+                                        <input type="text" required id="cust-name" placeholder="Contoh: Budi Santoso" class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Nomor WhatsApp *</label>
+                                        <input type="tel" required id="cust-wa" placeholder="Contoh: 081234567890" class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Alamat Email (Opsional)</label>
+                                        <input type="email" id="cust-email" placeholder="Contoh: budi@gmail.com" class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Delivery Options -->
+                            <div>
+                                <h3 class="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-truck text-brand-600"></i> Opsi Pengambilan / Pengiriman
+                                </h3>
+                                <div class="grid grid-cols-2 gap-3 mb-3">
+                                    <label class="border border-gray-200 p-3 rounded-xl flex items-center gap-3 cursor-pointer hover:border-brand-500 transition shadow-xs">
+                                        <input type="radio" name="delivery" value="pickup" checked onchange="toggleAddressField(false)" class="text-brand-600 focus:ring-brand-500">
+                                        <div>
+                                            <div class="text-xs font-bold text-gray-800">Ambil di Toko</div>
+                                            <div class="text-[10px] text-gray-500">Bebas biaya ongkir</div>
+                                        </div>
+                                    </label>
+                                    <label class="border border-gray-200 p-3 rounded-xl flex items-center gap-3 cursor-pointer hover:border-brand-500 transition shadow-xs">
+                                        <input type="radio" name="delivery" value="delivery" onchange="toggleAddressField(true)" class="text-brand-600 focus:ring-brand-500">
+                                        <div>
+                                            <div class="text-xs font-bold text-gray-800">Diantar ke Rumah</div>
+                                            <div class="text-[10px] text-gray-500">Ongkir Rp 2.000</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div id="address-container" class="hidden">
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Alamat Pengiriman Lengkap *</label>
+                                    <textarea id="cust-address" rows="2" placeholder="Nama Jalan, RT/RW, No. Rumah, Patokan..." class="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Payment Options -->
+                            <div>
+                                <h3 class="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-wallet text-brand-600"></i> Metode Pembayaran
+                                </h3>
+                                <div class="grid grid-cols-2 gap-3 mb-3">
+                                    <label class="border border-gray-200 p-3 rounded-xl flex items-center gap-3 cursor-pointer hover:border-brand-500 transition shadow-xs">
+                                        <input type="radio" name="payment" value="qris" checked onchange="togglePaymentDetail('qris')" class="text-brand-600 focus:ring-brand-500">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fa-solid fa-qrcode text-brand-600 text-lg"></i>
+                                            <span class="text-xs font-bold text-gray-800">QRIS</span>
+                                        </div>
+                                    </label>
+                                    <label class="border border-gray-200 p-3 rounded-xl flex items-center gap-3 cursor-pointer hover:border-brand-500 transition shadow-xs">
+                                        <input type="radio" name="payment" value="cod" onchange="togglePaymentDetail('cod')" class="text-brand-600 focus:ring-brand-500">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fa-solid fa-hand-holding-dollar text-brand-600 text-lg"></i>
+                                            <span class="text-xs font-bold text-gray-800">COD (Bayar di Tempat)</span>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <!-- QRIS Image Placeholder -->
+                                <div id="qris-info" class="bg-brand-50 border border-brand-100 p-4 rounded-xl text-center">
+                                    <p class="text-xs font-semibold text-brand-800 mb-2">Pindai Kode QRIS di bawah ini untuk membayar:</p>
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=TokoSembakoBerkahQRIS" alt="QRIS Code" class="mx-auto rounded-lg border-2 border-white shadow-sm mb-2">
+                                    <p class="text-[11px] text-gray-500">Mendukung Gopay, OVO, Dana, ShopeePay, dan M-Banking</p>
+                                </div>
+                                <div id="cod-info" class="hidden bg-gray-50 border border-gray-200 p-4 rounded-xl text-xs text-gray-600">
+                                    <i class="fa-solid fa-info-circle text-brand-600 mr-1"></i> Pembayaran dilakukan secara tunai kepada kurir atau kasir saat barang diterima.
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm">
+                                <i class="fa-brands fa-whatsapp text-lg"></i> Konfirmasi & Kirim Pesanan ke WhatsApp
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- SHOPPING CART SLIDE-OVER MODAL -->
+    <div id="cart-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-xs" onclick="toggleCartModal()"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl flex flex-col">
+            <!-- Modal Header -->
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between bg-brand-50">
+                <div class="flex items-center gap-2 text-brand-800 font-bold">
+                    <i class="fa-solid fa-basket-shopping text-brand-600"></i>
+                    <span>Keranjang Belanja</span>
+                </div>
+                <button onclick="toggleCartModal()" class="text-gray-400 hover:text-gray-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Cart Items -->
+            <div id="cart-items-container" class="flex-grow overflow-y-auto p-4 space-y-3 custom-scrollbar">
+                <!-- Cart items dynamically rendered -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 border-t border-gray-100 bg-gray-50 space-y-3">
+                <div class="flex justify-between items-center text-sm font-bold text-gray-800">
+                    <span>Total Subtotal:</span>
+                    <span id="modal-subtotal" class="text-brand-600 text-base">Rp 0</span>
+                </div>
+                <button onclick="goToCheckout()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl transition shadow-md text-sm flex items-center justify-center gap-2">
+                    Proses Detail Pemesanan <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= INFORMASI TOKO & FOOTER ================= -->
+    <footer class="bg-gray-900 text-gray-300 mt-12 border-t-4 border-brand-600">
+        <!-- Store Description & Details Section -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                
+                <!-- Col 1: Store Intro -->
+                <div class="md:col-span-1 space-y-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="bg-brand-600 text-white p-2 rounded-lg">
+                            <i class="fa-solid fa-store text-lg"></i>
+                        </div>
+                        <span class="font-bold text-lg text-white">Sembako<span class="text-brand-500">Ku</span></span>
+                    </div>
+                    <p class="text-xs text-gray-400 leading-relaxed">
+                        Toko Sembako Berkah menyediakan berbagai macam kebutuhan pokok, bahan makanan, jajanan, minuman, hingga rokok dengan harga terjangkau, ketersediaan produk lengkap, dan pelayanan ramah.
+                    </p>
+                </div>
+
+                <!-- Col 2: Operating Hours -->
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-3 pb-1 border-b border-gray-800 flex items-center gap-2">
+                        <i class="fa-solid fa-clock text-brand-500"></i> Jam Operasional
+                    </h4>
+                    <ul class="text-xs space-y-2 text-gray-400">
+                        <li class="flex justify-between">
+                            <span>Senin - Jumat:</span>
+                            <span class="text-white font-medium">07.00 - 21.00 WIB</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Contact Info -->
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-3 pb-1 border-b border-gray-800 flex items-center gap-2">
+                        <i class="fa-solid fa-headset text-brand-500"></i> Kontak Toko
+                    </h4>
+                    <ul class="text-xs space-y-2 text-gray-400">
+                        <li class="flex items-center gap-2">
+                            <i class="fa-brands fa-whatsapp text-brand-500 text-sm"></i>
+                            <span>WhatsApp / Telp: <strong class="text-white">+62 812-3456-7890</strong></span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i class="fa-solid fa-envelope text-brand-500 text-sm"></i>
+                            <span>Email: <strong class="text-white">SembakoKu@gmail.com</strong></span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Store Location -->
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-3 pb-1 border-b border-gray-800 flex items-center gap-2">
+                        <i class="fa-solid fa-location-dot text-brand-500"></i> Lokasi Toko
+                    </h4>
+                    <p class="text-xs text-gray-400 mb-2 leading-relaxed">
+                        Jl.Somelangu Dk. Kedung Bener, Kebumen, Jawa Tengah 54311
+                    </p>
+                    <span class="inline-block bg-gray-800 text-gray-300 text-[11px] px-2.5 py-1 rounded-md border border-gray-700">
+                        <i class="fa-solid fa-map-pin text-brand-500 mr-1"></i> Area Layanan: Seluruh Kebumen & Sekitarnya
+                    </span>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-8 pt-6 text-center text-xs text-gray-500">
+                &copy; 2026 Toko SembakoKu. Hak Cipta Dilindungi Undang-Undang.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript File -->
+    <script src="script.js"></script>
+</body>
+</html>
